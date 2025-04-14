@@ -1,0 +1,12 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+.idea
+.zed
+
+backend/.venv
+backend/.env
+backend/.env.testing
+
+frontend/node_modules
+frontend/dist

@@ -1,0 +1,38 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "advanced-alchemy>=0.30.3",
+    "asyncpg>=0.30.0",
+    "litestar==2.15.1",
+    "pydantic>=2.10.6",
+    "pydantic-settings>=2.7.1",
+    "pyyaml>=6.0.2",
+    "uvicorn>=0.34.0",
+    "service-laboratory==1.0.1",
+    "pytest>=8.3.5",
+    "jinja2>=3.1.6",
+    "faker>=37.1.0",
+    "pytest-asyncio>=0.26.0",
+]
+
+[tool.ruff]
+builtins = ["_"]
+line-length = 120
+
+[tool.ruff.lint.pylint]
+max-args = 10
+
+[tool.ruff.lint.isort]
+detect-same-package = true
+force-sort-within-sections = true
+known-first-party = [ "lab"]
+known-local-folder = ["app"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+]
