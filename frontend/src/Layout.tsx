@@ -7,10 +7,9 @@ const Layout = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="p-10 min-h-svh">
-        <Link to="/books" className="mr-5">
-          books
-        </Link>
-        <Link to="/tags">tags</Link>
+        <Link to="/" className="mr-5">start</Link>
+        <Link to="/users" className="mr-5">users</Link>
+        <Link to="/roles">roles</Link>
         <Outlet />
         <Toaster />
       </div>

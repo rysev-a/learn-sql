@@ -1,4 +1,4 @@
-from .auth import create_auth_tables
+from app.auth.migrations.auth import create_auth_tables
 
 
 async def init_migrations(execute):

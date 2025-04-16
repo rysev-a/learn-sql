@@ -20,6 +20,12 @@ export interface BookType extends BaseModelType {
   description: string;
 }
 
+export interface UserType extends BaseModelType {
+  email: string;
+  first_name: string;
+  last_name: string;
+}
+
 export interface TagType {
   id: string;
   name: string;
@@ -27,18 +33,16 @@ export interface TagType {
 }
 
 export const crudApi = <ModelType extends BaseModelType>(url: string) => ({
-  getList: () => axios.get(url),
+  getList: (
+    pagination: { limit: number; offset: number } = { limit: 100, offset: 0 },
+  ) =>
+    axios.get(`${url}?limit=${pagination.limit}&offset=${pagination.offset}`),
   removeDetail: (id: string) => axios.delete(`${url}/${id}`), //.then((res: { data: ModelType }) => res.data),
   updateDetail: (data: Partial<ModelType>) =>
     axios.patch(`${url}/${data.id}`, data),
   createDetail: (data: Partial<ModelType>) =>
     axios.post(url, data).then((res: { data: ModelType }) => res.data),
 });
-
-export const api = {
-  booksApi: crudApi<BookType>("/api/books/books"),
-  tagsApi: crudApi<TagType>("/api/books/tags"),
-};
 
 export const onSuccessRemove =
   <ModelType extends BaseModelType>(queryKey: string) =>
@@ -64,17 +68,23 @@ export const onSuccessCreate =
     });
   };
 
-const useConfigureQuery = <ModelType extends BaseModelType>(
+export interface Pagination {
+  limit: number;
+  offset: number;
+}
+
+export const useConfigureQuery = <ModelType extends BaseModelType>(
   queryKey: string,
   url: string,
+  pagination?: Pagination,
 ) => {
   const api = crudApi<ModelType>(url);
 
   const list = useQuery({
-    queryKey: [queryKey],
+    queryKey: [queryKey, pagination],
     queryFn: async () => {
       try {
-        const response = await api.getList();
+        const response = await api.getList(pagination);
         return response.data;
       } catch (e) {
         return Promise.reject(new Error((e as AxiosError).message));
@@ -107,8 +117,8 @@ const useConfigureQuery = <ModelType extends BaseModelType>(
 };
 
 export const useApiQuery = () => {
-  const books = useConfigureQuery<BookType>("books", "/api/books/books");
-  const tags = useConfigureQuery<TagType>("tags", "/api/books/tags");
-
-  return { books, tags };
+  // const books = useConfigureQuery<BookType>("books", "/api/books/books");
+  // const tags = useConfigureQuery<TagType>("tags", "/api/books/tags");
+  const users = useConfigureQuery<UserType>("users", "/api/users");
+  return { users };
 };

@@ -2,8 +2,8 @@ import click
 
 from lab.core.cli import coro
 
-from app.cli import auth_cli
-from app.database import database
+from app.auth.auth_cli import auth_cli
+from app.database import Database
 from app.migrations import init_migrations
 from app.settings import settings
 
@@ -16,6 +16,7 @@ def raw_sql_cli(): ...
 @coro
 async def raw_migrate():
     click.echo("run migrations")
+    database = Database()
     await database.connect(settings.db_uri, settings.pool_db)
     await init_migrations(database.fetch)
     click.echo("migrations success")

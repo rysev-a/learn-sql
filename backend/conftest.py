@@ -24,10 +24,9 @@ def anyio_backend():
 
 
 @pytest.fixture(scope="session")
-async def db() -> Database:
-    database = Database()
-
+async def db():
     # 1. connect
+    database = Database()
     await database.connect(settings.db_uri, settings.pool_db)
 
     # 2. add migrations
@@ -42,8 +41,6 @@ async def db() -> Database:
         # 3. clear database
         await database.fetch("delete from users")
         await database.close()
-
-
 
 
 # @pytest.fixture(scope="session")

@@ -28,6 +28,3 @@ class Database:
         async with self.pool.acquire() as connection:
             async with connection.transaction():
                 return await connection.executemany(*args)
-
-
-database = Database()
