@@ -105,9 +105,10 @@ export function UserList() {
         <Input
           placeholder="Filter emails..."
           type="date"
-          value={formattedBirthDate}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setFilterBirthdate(parseISO(event?.currentTarget?.value));
+            if (event?.currentTarget?.value) {
+              setFilterBirthdate(parseISO(event?.currentTarget?.value));
+            }
           }}
           className="max-w-sm"
         />
