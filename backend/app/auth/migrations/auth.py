@@ -5,7 +5,8 @@ async def create_auth_tables(execute):
             email varchar(255) unique,
             password varchar(1024),
             first_name varchar(1024),
-            last_name varchar(1024)
+            last_name varchar(1024),
+            birthdate date
         );
     """)
 
@@ -25,3 +26,9 @@ async def create_auth_tables(execute):
             foreign key(role_id) references roles(id)
         );
     """)
+
+
+async def drop_auth_tables(execute):
+    await execute("drop table users_roles cascade")
+    await execute("drop table roles cascade")
+    await execute("drop table users cascade")

@@ -3,7 +3,7 @@ import asyncio
 import pytest
 
 from app.database import Database
-from app.migrations import init_migrations
+from app.migrations import init_migrations, teardown_migrations
 from app.settings import settings
 
 
@@ -39,40 +39,5 @@ async def db():
         raise e
     finally:
         # 3. clear database
-        await database.fetch("delete from users")
+        await teardown_migrations(database.fetch)
         await database.close()
-
-
-# @pytest.fixture(scope="session")
-# async def admin_headers(db_session):
-#     role_repository = await provide_role_repository(db_session)
-#     user_repository = await provide_user_repository(db_session)
-#     await role_repository.add(RoleModel(name="admin"))
-#     await user_repository.create_admin(UserModel(email="admin@mail.com", password=hash_password("admin")))
-#
-#     async with AsyncTestClient(app) as client:
-#         response = await client.post("/api/account/login", json={"email": "admin@mail.com", "password": "admin"})
-#         yield {API_KEY_HEADER: f"{TOKEN_PREFIX}{response.json().get('access_token')}"}
-#
-#     await user_repository.delete_where()
-#     await role_repository.delete_where()
-#
-#
-# @pytest.fixture(scope="session")
-# async def user_headers(request, db_session):
-#     email, password = request.param
-#
-#     role_repository = await provide_role_repository(db_session)
-#     user_repository = await provide_user_repository(db_session)
-#
-#     await role_repository.add(RoleModel(name="customer"))
-#     user = await user_repository.add(UserModel(email=email, password=hash_password(password)))
-#
-#     await user_repository.add_user_role(user, "customer")
-#
-#     async with AsyncTestClient(app) as client:
-#         response = await client.post("/api/account/login", json={"email": email, "password": password})
-#         yield {API_KEY_HEADER: f"{TOKEN_PREFIX}{response.json().get('access_token')}"}
-#
-#     await user_repository.delete_where()
-#     await role_repository.delete_where()

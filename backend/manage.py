@@ -14,7 +14,7 @@ def raw_sql_cli(): ...
 
 @raw_sql_cli.command()
 @coro
-async def raw_migrate():
+async def migrate():
     click.echo("run migrations")
     database = Database()
     await database.connect(settings.db_uri, settings.pool_db)

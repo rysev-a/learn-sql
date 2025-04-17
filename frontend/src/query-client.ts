@@ -24,6 +24,7 @@ export interface UserType extends BaseModelType {
   email: string;
   first_name: string;
   last_name: string;
+  birthdate: string;
 }
 
 export interface TagType {
@@ -35,8 +36,14 @@ export interface TagType {
 export const crudApi = <ModelType extends BaseModelType>(url: string) => ({
   getList: (
     pagination: { limit: number; offset: number } = { limit: 100, offset: 0 },
-  ) =>
-    axios.get(`${url}?limit=${pagination.limit}&offset=${pagination.offset}`),
+    filters: Filter[] = [],
+  ) => {
+    new URL("http://foo.bar/?x=1&y=2");
+
+    return axios.get(
+      `${url}?limit=${pagination.limit}&offset=${pagination.offset}&filters=${JSON.stringify(filters)}`,
+    );
+  },
   removeDetail: (id: string) => axios.delete(`${url}/${id}`), //.then((res: { data: ModelType }) => res.data),
   updateDetail: (data: Partial<ModelType>) =>
     axios.patch(`${url}/${data.id}`, data),
@@ -73,18 +80,24 @@ export interface Pagination {
   offset: number;
 }
 
+export interface Filter {
+  key: string;
+  value: string;
+}
+
 export const useConfigureQuery = <ModelType extends BaseModelType>(
   queryKey: string,
   url: string,
   pagination?: Pagination,
+  filters?: Filter[],
 ) => {
   const api = crudApi<ModelType>(url);
 
   const list = useQuery({
-    queryKey: [queryKey, pagination],
+    queryKey: [queryKey, pagination, filters],
     queryFn: async () => {
       try {
-        const response = await api.getList(pagination);
+        const response = await api.getList(pagination, filters);
         return response.data;
       } catch (e) {
         return Promise.reject(new Error((e as AxiosError).message));

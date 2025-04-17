@@ -1,9 +1,10 @@
+from datetime import date
 from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
 
-from app.core.crud import Pagination
+from app.core.crud import Filter, Pagination
 from app.database import Database
 
 
@@ -13,15 +14,23 @@ class UserModel(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     password: Optional[str] = None
+    birthdate: Optional[date] = None
 
 
 class UserService:
     def __init__(self, database: Database) -> None:
         self.db = database
 
-    async def get_users(self, pagination: Optional[Pagination] = None) -> List[UserModel]:
+    async def get_users(
+        self,
+        pagination: Optional[Pagination] = None,
+        search_params: List[Filter] = None,
+    ) -> List[UserModel]:
         sql_query = "SELECT * FROM users"
+        sql_query = self._apply_filtration(sql_query, search_params)
         sql_query = self._apply_pagination(sql_query, pagination)
+
+        print(sql_query)
 
         return [UserModel(**user) for user in await self.db.fetch(sql_query)]
 
@@ -71,6 +80,15 @@ class UserService:
 
         return sql_query_with_pagination
 
+
+    @staticmethod
+    def _apply_filtration(sql_query: str, search_params: List[Filter] = None) -> str:
+        sql_query_with_filtration = sql_query
+        if search_params:
+            sql_query_with_filtration = sql_query_with_filtration + "\nwhere "
+            for search in search_params:
+                sql_query_with_filtration = sql_query_with_filtration + f"{search.key} = '{search.value}'"
+        return sql_query_with_filtration
 
 async def provide_user_service(db: Database) -> UserService:
     return UserService(db)
